@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    overscroll-behavior: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  main > :first-child {
+    margin-top: 0 !important;
+  }
+  main > :last-child {
+    margin-bottom: 0 !important;
+  }
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Warm frosted glass styling */
+.glass-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 8px 32px -4px rgba(159, 60, 22, 0.06),
+    0 2px 8px -2px rgba(127, 87, 0, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.glass-card-active {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(191, 84, 44, 0.35);
+  box-shadow:
+    0 12px 36px -6px rgba(159, 60, 22, 0.12),
+    0 0 0 2px rgba(191, 84, 44, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.glass-header {
+  /* background: rgba(251, 249, 245, 0.82); */
+  background: rgba(251, 249, 245);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(222, 192, 183, 0.35);
+}
+
+.glass-nav {
+  background: rgba(251, 249, 245, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(222, 192, 183, 0.3);
+}
+
+.glass-input-bar {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 10px 30px -4px rgba(159, 60, 22, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* Editable inline elements */
+[contenteditable="true"] {
+  outline: none;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+[contenteditable="true"]:hover {
+  box-shadow: 0 0 0 1px rgba(159, 60, 22, 0.2);
+  background-color: rgba(255, 219, 207, 0.15);
+}
+[contenteditable="true"]:focus {
+  box-shadow: 0 0 0 1.5px rgba(159, 60, 22, 0.45);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined Variable", sans-serif !important;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  /* Cân chỉnh nét chữ cho sắc nét */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

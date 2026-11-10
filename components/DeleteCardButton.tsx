@@ -1,24 +1,19 @@
-import { useState } from "react"
-
 import type { VocabularyWord } from "~types"
 
 import DeleteCardModal from "./DeleteCardModal"
+import useToggle from "./hooks/useToggle"
 
 export default function DeleteCardButton({
   vocabWord
 }: {
   vocabWord?: VocabularyWord
 }) {
-  const [isShowing, setIsShowing] = useState(false)
-
-  function toggle() {
-    setIsShowing(!isShowing)
-  }
+  const { isShowing, toggle } = useToggle()
 
   return (
     <>
       <button
-        className="delete-word-btn w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant/70 hover:text-error hover:bg-error-container/40 transition-colors"
+        className="delete-word-btn flex h-8 w-8 items-center justify-center rounded-full text-on-surface-variant/70 transition-colors hover:bg-error-container/40 hover:text-error"
         onClick={toggle}>
         <span className="material-symbols-outlined text-[17px]">close</span>
       </button>

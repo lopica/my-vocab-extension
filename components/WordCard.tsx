@@ -1,70 +1,56 @@
-import type { VocabularyWord } from "~types";
-import getCreateTimeDisplay from "~utils";
-import WordInput from "./WordInput";
-import PhoneticInput from "./PhoneticInput";
-import MeanInput from "./MeanInput";
-import DeleteCardButton from "./DeleteCardButton";
-import { useState } from "react";
+import type { VocabularyWord } from "~types"
+import getCreateTimeDisplay from "~utils"
 
-export default function WordCard({word: vocabWord}: {word: VocabularyWord}) {
-  const [isPlaying, setIsPlaying] = useState(false);
+import DeleteCardButton from "./DeleteCardButton"
+import useWordPlay from "./hooks/useWordPlay"
+import MeanInput from "./MeanInput"
+import PhoneticInput from "./PhoneticInput"
+import WordInput from "./WordInput"
+
+export default function WordCard({
+  word: vocabWord
+}: {
+  word: VocabularyWord
+}) {
+  const { isPlaying, playWord } = useWordPlay()
 
   const handleClickDomain = (e) => {
-    e.stopPropagation(); // Ngăn sự kiện click lan ra thẻ Card bên ngoài
+    e.stopPropagation() // Ngăn sự kiện click lan ra thẻ Card bên ngoài
     if (vocabWord.sourceUrl) {
-      chrome.tabs.create({ url: vocabWord.sourceUrl });
+      chrome.tabs.create({ url: vocabWord.sourceUrl })
     }
   }
 
-  const handleSpeak = (e) => {
-    e.stopPropagation();
-
-    if (!("speechSynthesis" in window)) {
-      console.warn("Trình duyệt không hỗ trợ phát âm.");
-      return;
-    }
-
-    // Dừng âm thanh cũ nếu người dùng bấm liên tục
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(vocabWord.word);
-    utterance.lang = "en-US"; // Đặt ngôn ngữ tiếng Anh (hoặc "en-GB")
-    utterance.rate = 0.85;    // Tốc độ đọc chậm lại một chút cho rõ chữ
-    utterance.pitch = 1.0;
-
-    // Bật/tắt hiệu ứng sóng âm theo sự kiện đọc
-    utterance.onstart = () => setIsPlaying(true);
-    utterance.onend = () => setIsPlaying(false);
-    utterance.onerror = () => setIsPlaying(false);
-
-    window.speechSynthesis.speak(utterance);
+  const handleSpeak = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation()
+    playWord(vocabWord)
   }
 
   return (
     <div
-      className="vocab-card glass-card rounded-2xl p-space-md transition-all duration-200 hover:shadow-lg relative group"
+      className="vocab-card glass-card group relative rounded-2xl p-space-md transition-all duration-200 hover:shadow-lg"
       data-word="serendipity">
       <div className="flex items-start justify-between gap-gutter">
-        <div className="flex flex-col min-w-0 flex-1">
-          <div className="flex items-baseline gap-space-sm flex-wrap">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex flex-wrap items-baseline gap-space-sm">
             <WordInput vocabWord={vocabWord} />
             <PhoneticInput vocabWord={vocabWord} />
           </div>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex flex-shrink-0 items-center gap-1">
           {/* <!-- Audio Button --> */}
           <button
-            className="audio-play-btn w-8 h-8 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-on-primary flex items-center justify-center transition-all duration-150"
+            className="audio-play-btn flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-150 hover:bg-primary hover:text-on-primary"
             onClick={handleSpeak}>
             {!isPlaying ? (
-              <span className="material-symbols-outlined text-[18px] speaker-icon">
+              <span className="material-symbols-outlined speaker-icon text-[18px]">
                 volume_up
               </span>
             ) : (
-              <span className="sound-wave flex items-center gap-0.5 h-3 px-1">
-                <span className="w-0.5 h-2 bg-current animate-pulse"></span>
-                <span className="w-0.5 h-3 bg-current animate-bounce"></span>
-                <span className="w-0.5 h-1.5 bg-current animate-pulse"></span>
+              <span className="sound-wave flex h-3 items-center gap-0.5 px-1">
+                <span className="h-2 w-0.5 animate-pulse bg-current"></span>
+                <span className="h-3 w-0.5 animate-bounce bg-current"></span>
+                <span className="h-1.5 w-0.5 animate-pulse bg-current"></span>
               </span>
             )}
           </button>
@@ -75,14 +61,17 @@ export default function WordCard({word: vocabWord}: {word: VocabularyWord}) {
       {/* <!-- Meaning/Definition (Directly editable in place) --> */}
       <MeanInput vocabWord={vocabWord} />
       {/* <!-- Card Footer --> */}
-      <div className="flex items-center justify-between pt-2 mt-2 border-t border-outline-variant/20 flex-wrap gap-2">
-        <div className="flex items-center gap-1.5 text-on-surface-variant text-body-sm">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-outline-variant/20 pt-2">
+        <div className="flex items-center gap-1.5 text-body-sm text-on-surface-variant">
           <span className="material-symbols-outlined text-[13px] text-primary/70">
             language
           </span>
-          <span className="font-label-sm text-label-sm cursor-pointer"
-          onClick={handleClickDomain}>{vocabWord.sourceDomain}</span>
-          <span className="text-outline-variant font-label-sm">•</span>
+          <span
+            className="cursor-pointer font-label-sm text-label-sm"
+            onClick={handleClickDomain}>
+            {vocabWord.sourceDomain}
+          </span>
+          <span className="font-label-sm text-outline-variant">•</span>
           <span className="font-label-sm text-label-sm text-outline">
             {getCreateTimeDisplay(vocabWord.createdAt)}
           </span>

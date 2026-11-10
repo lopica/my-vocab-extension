@@ -1,64 +1,134 @@
-import { useStorage } from "@plasmohq/storage/hook"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import { useLiveQuery } from "dexie-react-hooks"
+import { useDeferredValue, useRef } from "react"
+
+import { useStorage } from "@plasmohq/storage/hook"
 
 import EmptyWordPlaceholder from "~/components/EmptyWordPlaceholder"
 import WordCard from "~/components/WordCard"
 import { db } from "~db"
 
+const CHUNK_STEP = 50 // Chỉ query lại DB khi cuộn qua mỗi 50 từ
+const FETCH_LIMIT = 120 // Mỗi lần lấy dư ra 120 từ để cuộn mượt không cần chờ
+const GAP_PX = 12
+
 export default function WordSection() {
   const [searchQuery] = useStorage("search_query", "")
+  const deferredQuery = useDeferredValue(searchQuery)
+  const parentRef = useRef<HTMLDivElement>(null)
 
-  // Truy vấn trực tiếp từ IndexedDB mỗi khi searchQuery thay đổi
-  const data = useLiveQuery(
+  // 1. Đếm tổng số record (có giá trị mặc định để KHÔNG return null làm mất parentRef)
+  const countData = useLiveQuery(
     async () => {
       const totalCount = await db.words.count()
-      const query = (searchQuery || "").trim().toLowerCase()
+      const query = (deferredQuery || "").trim().toLowerCase()
 
-      let items
-      if (!query) {
-        // Nếu không tìm kiếm: Lấy 100 từ mới nhất để tránh render hàng ngàn DOM node cùng lúc
-        items = await db.words
-          .orderBy("createdAt")
-          .reverse()
-          .limit(100)
-          .toArray()
-      } else {
-        // Nếu có từ khóa: Lọc trực tiếp dưới IndexedDB
-        items = await db.words
-          .orderBy("createdAt")
-          .reverse()
-          .filter((item) => item.word.toLowerCase().includes(query))
-          .limit(100)
-          .toArray()
-      }
+      const matchCount = query
+        ? await db.words.where("word").startsWithIgnoreCase(query).count()
+        : totalCount
 
-      return { totalCount, items }
+      return { totalCount, matchCount, isLoaded: true }
     },
-    [searchQuery] // Chạy lại query mỗi khi searchQuery thay đổi
+    [deferredQuery],
+    { totalCount: 0, matchCount: 0, isLoaded: false }
   )
 
-  // Khi IndexedDB đang đọc dữ liệu ở mili-giây đầu tiên (data === undefined),
-  // return null để tránh bị nháy (flicker) cái EmptyWordPlaceholder lên màn hình
-  if (!data) return null
+  const { totalCount, matchCount, isLoaded } = countData
 
-  const { totalCount, items: filteredWords } = data
+  // 2. Khởi tạo Virtualizer (estimateSize ~135px sát với chiều cao thật của WordCard hơn)
+  const virtualizer = useVirtualizer({
+    count: matchCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 135,
+    overscan: 5,
+    gap: GAP_PX
+  })
 
+  const virtualItems = virtualizer.getVirtualItems()
+  const firstVisibleIndex = virtualItems[0]?.index ?? 0
+
+  // Neo offset theo từng bậc 50 (0, 50, 100, 150...) để tránh spam DB từng pixel cuộn
+  const chunkOffset = Math.max(
+    0,
+    Math.floor(Math.max(0, firstVisibleIndex - 15) / CHUNK_STEP) * CHUNK_STEP
+  )
+
+  // 3. Load 1 cụm 120 từ và trả về kèm đúng offset của lần query đó
+  const pageData = useLiveQuery(
+    async () => {
+      if (matchCount === 0) return { offset: 0, items: [] }
+
+      const query = (deferredQuery || "").trim().toLowerCase()
+
+      const items = !query
+        ? await db.words
+            .orderBy("createdAt")
+            .reverse()
+            .offset(chunkOffset)
+            .limit(FETCH_LIMIT)
+            .toArray()
+        : await db.words
+            .where("word")
+            .startsWithIgnoreCase(query)
+            .offset(chunkOffset)
+            .limit(FETCH_LIMIT)
+            .toArray()
+
+      // Trả về cả offset gắn liền với mảng items này để chống lệch nhịp bất đồng bộ
+      return { offset: chunkOffset, items }
+    },
+    [deferredQuery, chunkOffset, matchCount],
+    { offset: 0, items: [] }
+  )
+
+  // Luôn giữ thẻ <div ref={parentRef}> trong DOM để Virtualizer đo được chiều cao ngay từ đầu
   return (
-    <div className="flex flex-col gap-space-md">
-      {/* TH1: Giỏ từ thực sự trống (chưa lưu từ nào) */}
-      {totalCount === 0 && <EmptyWordPlaceholder />}
+    <div
+      ref={parentRef}
+      className="-mr-1 h-[410px] overflow-y-auto pb-4 pr-1 pt-2">
+      {isLoaded && totalCount === 0 && <EmptyWordPlaceholder />}
 
-      {/* TH2: Có từ trong giỏ, nhưng gõ tìm kiếm không khớp từ nào */}
-      {totalCount > 0 && filteredWords.length === 0 && (
-        <div className="py-8 text-center text-on-surface-variant font-label-md">
+      {isLoaded && totalCount > 0 && matchCount === 0 && (
+        <div className="py-8 text-center font-label-md text-on-surface-variant">
           Không tìm thấy từ nào khớp với "{searchQuery}"
         </div>
       )}
 
-      {/* TH3: Hiển thị danh sách từ (nhớ thêm key={item.id}) */}
-      {filteredWords.map((item) => (
-        <WordCard key={item.id} word={item} />
-      ))}
+      {matchCount > 0 && (
+        <div
+          style={{
+            height: virtualizer.getTotalSize(),
+            position: "relative",
+            width: "100%"
+          }}>
+          {virtualItems.map((virtualItem) => {
+            // Dùng pageData.offset (của đúng mảng items đang có) thay vì biến bên ngoài
+            const itemIndexInPage = virtualItem.index - pageData.offset
+            const word = pageData.items[itemIndexInPage]
+
+            return (
+              <div
+                key={virtualItem.key}
+                data-index={virtualItem.index}
+                ref={virtualizer.measureElement}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  transform: `translateY(${virtualItem.start}px)`
+                }}>
+                {word ? (
+                  <WordCard word={word} />
+                ) : (
+                  // Skeleton giữ chỗ cao 135px khi người dùng kéo thanh cuộn siêu nhanh
+                  <div className="h-[135px] w-full animate-pulse rounded-2xl bg-surface-container-low/50" />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

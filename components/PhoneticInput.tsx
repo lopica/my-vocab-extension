@@ -1,4 +1,5 @@
 import type { VocabularyWord } from "~types"
+
 import useInput from "./hooks/useInput"
 
 const DEFAULT_PHONETICS = "/...thêm phiên âm.../"
@@ -9,14 +10,14 @@ export default function PhoneticInput({
   vocabWord: VocabularyWord
 }) {
   const {
-      isEditing,
-      inputRef,
-      word: phonetic,
-      handleInputClick,
-      handleBlur,
-      handleInputChange,
-      handleKeyDown
-    } = useInput(vocabWord, "phonetic")
+    isEditing,
+    inputRef,
+    word: phonetic,
+    handleInputClick,
+    handleBlur,
+    handleInputChange,
+    handleKeyDown
+  } = useInput(vocabWord, "phonetic")
 
   if (isEditing) {
     return (
@@ -28,7 +29,7 @@ export default function PhoneticInput({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder={DEFAULT_PHONETICS}
-        className="[field-sizing:content] editable-text outline-none font-phonetic-display text-phonetic-display text-on-surface-variant/80 italic cursor-text px-1 -mx-1 bg-primary-fixed/20 rounded border-b-2 border-primary"
+        className="editable-text -mx-1 cursor-text rounded border-b-2 border-primary bg-primary-fixed/20 px-1 font-phonetic-display text-phonetic-display italic text-on-surface-variant/80 outline-none [field-sizing:content]"
       />
     )
   }
@@ -36,7 +37,7 @@ export default function PhoneticInput({
   return (
     <span
       onClick={handleInputClick}
-      className="editable-text font-phonetic-display text-phonetic-display text-on-surface-variant/80 italic cursor-pointer px-1 -mx-1">
+      className="editable-text -mx-1 cursor-pointer px-1 font-phonetic-display text-phonetic-display italic text-on-surface-variant/80">
       {vocabWord.phonetic ?? DEFAULT_PHONETICS}
     </span>
   )

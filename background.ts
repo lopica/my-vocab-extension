@@ -1,9 +1,5 @@
-import { Storage } from "@plasmohq/storage"
 import { db } from "~db"
-
 import type { VocabularyWord } from "~types"
-
-const storage = new Storage()
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -21,8 +17,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     console.log("Từ vừa bôi đen là:", selectedWord)
 
     // Lấy danh sách từ cũ (nếu chưa có thì trả về mảng rỗng)
-    const existingWords =
-      (await storage.get<VocabularyWord[]>("vocab_list")) || []
 
     const rawUrl = info.pageUrl || tab?.url || ""
     let domain = ""

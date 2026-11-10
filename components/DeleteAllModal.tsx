@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom"
 
 import { db } from "~db"
+import { deleteAll } from "~utils"
 
 export default function DeleteAllModal({
   isShowing,
@@ -9,51 +10,41 @@ export default function DeleteAllModal({
   isShowing: boolean
   hide: () => void
 }) {
-
   const handleDelete = async () => {
-    try {
-        await db.words.clear()
-
-        console.log(`Đã xóa thành công toàn bộ từ`)
-        hide()
-        return
-      
-    } catch (error) {
-      console.error("Lỗi khi cập nhật storage:", error)
-      // Hoàn tác lại giá trị cũ trên UI nếu lưu thất bại
-    }
+    await deleteAll()
+    hide()
   }
 
-    return isShowing
+  return isShowing
     ? ReactDOM.createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-margin bg-[#2d1b14]/50 backdrop-blur-md transition-opacity duration-300"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#2d1b14]/50 p-margin backdrop-blur-md transition-opacity duration-300"
           id="delete-modal-overlay">
           {/* <!-- Modal Dialog Window --> */}
-          <div className="w-full max-w-[390px] bg-surface-container-lowest/95 backdrop-blur-2xl rounded-3xl p-space-lg shadow-2xl relative flex flex-col items-center text-center overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="animate-in fade-in zoom-in-95 relative flex w-full max-w-[390px] flex-col items-center overflow-hidden rounded-3xl bg-surface-container-lowest/95 p-space-lg text-center shadow-2xl backdrop-blur-2xl duration-200">
             {/* <!-- Top Subtle Warm Glow Accent --> */}
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-44 h-44 bg-primary-fixed-dim/35 rounded-full blur-2xl pointer-events-none"></div>
+            <div className="bg-primary-fixed-dim/35 pointer-events-none absolute -top-12 left-1/2 h-44 w-44 -translate-x-1/2 rounded-full blur-2xl"></div>
             {/* <!-- Modal Badge Icon --> */}
-            <div className="relative w-16 h-16 rounded-2xl bg-error-container/60 text-error flex items-center justify-center shadow-inner mb-space-md mt-space-xs">
-              <div className="absolute inset-0 rounded-2xl bg-error/10 animate-ping opacity-30"></div>
+            <div className="relative mb-space-md mt-space-xs flex h-16 w-16 items-center justify-center rounded-2xl bg-error-container/60 text-error shadow-inner">
+              <div className="absolute inset-0 animate-ping rounded-2xl bg-error/10 opacity-30"></div>
               <span className="material-symbols-outlined text-[32px]">
                 delete_forever
               </span>
             </div>
             {/* <!-- Header & Headline --> */}
-            <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight">
+            <h2 className="font-headline-md text-headline-md tracking-tight text-on-surface">
               Xóa khỏi Giỏ Từ?
             </h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-1.5 px-space-xs leading-snug pb-5">
-              Toàn bộ từ sẽ bị gỡ vĩnh viễn khỏi danh sách lưu trữ của bạn. Thao tác
-              này không thể hoàn tác.
+            <p className="mt-1.5 px-space-xs pb-5 font-body-md text-body-md leading-snug text-on-surface-variant">
+              Toàn bộ từ sẽ bị gỡ vĩnh viễn khỏi danh sách lưu trữ của bạn. Thao
+              tác này không thể hoàn tác.
             </p>
-          
+
             {/* <!-- Action Buttons Row --> */}
-            <div className="w-full flex flex-col-reverse gap-space-xs sm:flex-row sm:gap-space-sm">
+            <div className="flex w-full flex-col-reverse gap-space-xs sm:flex-row sm:gap-space-sm">
               {/* <!-- Cancel Button --> */}
               <button
-                className="w-full py-3 px-space-md rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-space-xs shadow-sm"
+                className="flex w-full items-center justify-center gap-space-xs rounded-xl bg-surface-container px-space-md py-3 font-label-md text-label-md text-on-surface shadow-sm transition-all duration-150 hover:bg-surface-container-high active:scale-[0.98]"
                 onClick={hide}
                 type="button">
                 <span className="material-symbols-outlined text-[18px]">
@@ -63,7 +54,7 @@ export default function DeleteAllModal({
               </button>
               {/* <!-- Destructive Confirm Button --> */}
               <button
-                className="w-full py-3 px-space-md rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-space-xs shadow-md shadow-primary/20"
+                className="flex w-full items-center justify-center gap-space-xs rounded-xl bg-primary px-space-md py-3 font-label-md text-label-md text-on-primary shadow-md shadow-primary/20 transition-all duration-150 hover:bg-primary-container active:scale-[0.98]"
                 type="button"
                 onClick={handleDelete}>
                 <span className="material-symbols-outlined text-[18px]">
@@ -73,7 +64,7 @@ export default function DeleteAllModal({
               </button>
             </div>
             {/* <!-- Tiny Helper Footnote --> */}
-            <div className="mt-space-md flex items-center gap-1 text-outline font-label-sm text-label-sm">
+            <div className="mt-space-md flex items-center gap-1 font-label-sm text-label-sm text-outline">
               <span className="material-symbols-outlined text-[14px]">
                 lightbulb
               </span>
@@ -86,5 +77,4 @@ export default function DeleteAllModal({
         document.body
       )
     : null
-  }
-  
+}

@@ -1,44 +1,56 @@
 import basketIcon from "~assets/icon.png"
+
 import DeleteAllButton from "./DeleteAllButton"
-import { useLiveQuery } from "dexie-react-hooks"
-import { db } from "~db"
+import useHeader from "./hooks/useHeader"
 
 export default function Header() {
-  const wordCount = useLiveQuery(() => db.words.count(), [], 0)
+  const { wordCount, handleSeed, seedingText } = useHeader()
 
-    return <header className="fixed top-0 w-full z-50 glass-header pt-safe">
-        <div className="h-16 px-margin flex items-center justify-between gap-gutter max-w-[440px] mx-auto w-full">
-          <div className="flex items-center gap-gutter min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-secondary-container/15 flex items-center justify-center shadow-sm flex-shrink-0 p-1 border border-primary/20">
-              <img
-                src={basketIcon}
-                alt="Giỏ Từ"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-space-xs">
-                <span className="font-headline-md text-headline-md text-on-surface tracking-tight truncate font-semibold">
-                  Giỏ Từ
-                </span>
-                {wordCount !== 0 && <span className="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">
-                  {wordCount}
-                </span>}
-              </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant truncate">
-                Nơi chứa từ của bạn
-              </span>
-            </div>
+  return (
+    <header className="glass-header pt-safe fixed top-0 z-50 w-full">
+      <div className="mx-auto flex h-16 w-full max-w-[440px] items-center justify-between gap-gutter px-margin">
+        <div className="flex min-w-0 items-center gap-gutter">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-secondary-container/15 p-1 shadow-sm">
+            <img
+              src={basketIcon}
+              alt="Giỏ Từ"
+              className="h-full w-full object-contain"
+            />
           </div>
-          <div className="flex items-center gap-space-xs flex-shrink-0">
-            {/* <!-- Delete / Clear all words button --> */}
-            <DeleteAllButton />
-            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[18px]">
-                person
+          <div className="flex min-w-0 flex-col">
+            <div className="flex items-center gap-space-xs">
+              <span className="truncate font-headline-md text-headline-md font-semibold tracking-tight text-on-surface">
+                Giỏ Từ
               </span>
+              {wordCount !== 0 && (
+                <span className="rounded-full bg-primary-fixed px-2 py-0.5 font-label-sm text-label-sm font-bold text-on-primary-fixed">
+                  {wordCount}
+                </span>
+              )}
             </div>
+            <span className="truncate font-label-sm text-label-sm text-on-surface-variant">
+              Nơi chứa từ của bạn
+            </span>
           </div>
         </div>
-      </header>
+        <div className="flex flex-shrink-0 items-center gap-space-xs">
+          {/* <!-- Delete / Clear all words button --> */}
+          <button
+            type="button"
+            onClick={handleSeed}
+            disabled={!!seedingText}
+            className="rounded-lg bg-primary/15 px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/25"
+            title="Tạo 1 triệu từ để test">
+            {seedingText || "+1M"}
+          </button>
+          <DeleteAllButton />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">
+            <span className="material-symbols-outlined text-[18px]">
+              person
+            </span>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
 }

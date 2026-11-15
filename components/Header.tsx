@@ -45,9 +45,7 @@ export default function Header() {
             {seedingText || "+1M"}
           </button> */}
           <DeleteAllButton />
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">
-            <AvatarHeaderButton />
-          </div>
+          <AvatarHeaderButton />
         </div>
       </div>
     </header>

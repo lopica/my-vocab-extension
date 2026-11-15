@@ -1,8 +1,8 @@
 {
   "name": "my-vocab-extension",
-  "displayName": "My vocab extension",
-  "version": "0.0.1",
-  "description": "save the word",
+  "displayName": "Giỏ từ",
+  "version": "0.0.2",
+  "description": "lưu từ vựng nhanh chóng, thuận tiện",
   "author": ".",
   "scripts": {
     "dev": "plasmo dev",

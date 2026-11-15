@@ -1,5 +1,4 @@
 import { useLiveQuery } from "dexie-react-hooks"
-import { useDeferredValue } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -11,13 +10,12 @@ import useVirtual from "./hooks/useVirtual"
 
 export default function WordSection() {
   const [searchQuery] = useStorage("search_query", "")
-  const deferredQuery = useDeferredValue(searchQuery)
 
   // 1. Lấy toàn bộ data trong một lần query duy nhất
   const { totalCount, words, isLoaded } = useLiveQuery(
     async () => {
       const totalCount = await db.words.count()
-      const query = (deferredQuery || "").trim().toLowerCase()
+      const query = (searchQuery || "").trim().toLowerCase()
 
       // Không dùng offset hay limit, lấy toàn bộ ra bằng .toArray()
       const words = !query
@@ -26,7 +24,7 @@ export default function WordSection() {
 
       return { totalCount, words, isLoaded: true }
     },
-    [deferredQuery],
+    [searchQuery],
     { totalCount: 0, words: [], isLoaded: false }
   )
 
@@ -60,8 +58,8 @@ export default function WordSection() {
               position: "absolute",
               transform: `translate3d(0px, ${virtualItems[0]?.start ?? 0}px, 0px)`,
               top: 0,
-              left: 0
-              // width: "450px",
+              left: 0,
+              width: "100%"
             }}>
             {virtualItems.map((virtualItem) => {
               // Vì đã lấy TOÀN BỘ mảng, ta chỉ việc map trực tiếp qua index của virtual item

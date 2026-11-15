@@ -1,5 +1,6 @@
 import basketIcon from "~assets/icon.png"
 
+import AvatarHeaderButton from "./AvatarHeaderButton"
 import DeleteAllButton from "./DeleteAllButton"
 import useHeader from "./hooks/useHeader"
 
@@ -35,19 +36,17 @@ export default function Header() {
         </div>
         <div className="flex flex-shrink-0 items-center gap-space-xs">
           {/* <!-- Delete / Clear all words button --> */}
-          <button
+          {/* <button
             type="button"
             onClick={handleSeed}
             disabled={!!seedingText}
             className="rounded-lg bg-primary/15 px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/25"
             title="Tạo 1 triệu từ để test">
             {seedingText || "+1M"}
-          </button>
+          </button> */}
           <DeleteAllButton />
           <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">
-            <span className="material-symbols-outlined text-[18px]">
-              person
-            </span>
+            <AvatarHeaderButton />
           </div>
         </div>
       </div>

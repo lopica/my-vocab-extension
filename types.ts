@@ -7,3 +7,5 @@ export interface VocabularyWord {
   sourceDomain: string // Tên miền hiển thị trên UI
   createdAt: number // Thời gian lưu (Timestamp: mili-giây)
 }
+
+export type Route = "home" | "setting"

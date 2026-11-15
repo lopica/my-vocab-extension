@@ -1,6 +1,5 @@
-import { useVirtualizer } from "@tanstack/react-virtual"
 import { useLiveQuery } from "dexie-react-hooks"
-import { useDeferredValue, useRef } from "react"
+import { useDeferredValue } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -8,10 +7,11 @@ import EmptyWordPlaceholder from "~/components/EmptyWordPlaceholder"
 import WordCard from "~/components/WordCard"
 import { db } from "~db"
 
+import useVirtual from "./hooks/useVirtual"
+
 export default function WordSection() {
   const [searchQuery] = useStorage("search_query", "")
   const deferredQuery = useDeferredValue(searchQuery)
-  const virtualContainerRef = useRef<HTMLDivElement>(null)
 
   // 1. Lấy toàn bộ data trong một lần query duy nhất
   const { totalCount, words, isLoaded } = useLiveQuery(
@@ -31,17 +31,11 @@ export default function WordSection() {
   )
 
   const matchCount = words.length
+  const { virtualContainerRef, virtualizer, virtualItems } = useVirtual(
+    matchCount,
+    150
+  )
 
-  // 2. Khởi tạo Virtualizer (estimateSize ~135px sát với chiều cao thật của WordCard)
-  const virtualizer = useVirtualizer({
-    count: matchCount,
-    estimateSize: () => 150,
-    getScrollElement: () => virtualContainerRef.current
-  })
-
-  const virtualItems = virtualizer.getVirtualItems()
-
-  // Luôn giữ thẻ <div ref={parentRef}> trong DOM để Virtualizer đo được chiều cao ngay từ đầu
   return (
     <div
       ref={virtualContainerRef}

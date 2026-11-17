@@ -1,9 +1,13 @@
 import { useState } from "react"
 
+import { useStorage } from "@plasmohq/storage/hook"
+
 import type { VocabularyWord } from "~types"
 
 export default function useWordPlay() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [voiceName] = useStorage<string>("voice_name", "")
+  const [speechRate] = useStorage<number>("speech_rate", 1.0)
 
   const playWord = (vocabWord: VocabularyWord) => {
     if (!("speechSynthesis" in window)) {
@@ -15,8 +19,18 @@ export default function useWordPlay() {
     window.speechSynthesis.cancel()
 
     const utterance = new SpeechSynthesisUtterance(vocabWord.word)
-    utterance.lang = "en-US" // Đặt ngôn ngữ tiếng Anh (hoặc "en-GB")
-    utterance.rate = 0.85 // Tốc độ đọc chậm lại một chút cho rõ chữ
+
+    // Áp dụng giọng đọc đã lưu (nếu có)
+    const voices = window.speechSynthesis.getVoices()
+    const savedVoice = voices.find((v) => v.name === voiceName)
+    if (savedVoice) {
+      utterance.voice = savedVoice
+      utterance.lang = savedVoice.lang
+    } else {
+      utterance.lang = "en-US"
+    }
+
+    utterance.rate = speechRate ?? 1.0
     utterance.pitch = 1.0
 
     // Bật/tắt hiệu ứng sóng âm theo sự kiện đọc

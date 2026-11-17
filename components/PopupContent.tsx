@@ -15,6 +15,7 @@ import ManualWord from "~misc/ManualWord"
 import type { Route } from "~types"
 
 import { RouteContext } from "./contexts/RouteContext"
+import SettingSection from "./SettingSection"
 
 // 1. Đưa toàn bộ giao diện cũ vào một component con
 export default function PopupContent() {
@@ -46,11 +47,7 @@ export default function PopupContent() {
               {/* <ManualWord /> */}
             </>
           )}
-          {route === "setting" && (
-            <div className="py-8 text-center font-label-md text-on-surface-variant">
-              Đây là trang cấu hình (Setting)
-            </div>
-          )}
+          {route === "setting" && <SettingSection />}
         </div>
       </main>
 

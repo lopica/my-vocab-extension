@@ -3,15 +3,14 @@ import { useEffect, useRef, useState } from "react"
 import { db } from "~db"
 import type { VocabularyWord } from "~types"
 
-export default function useInput(
-  vocabWord: VocabularyWord,
-  field: keyof VocabularyWord
-) {
+export default function useInput<
+  T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement
+>(vocabWord: VocabularyWord, field: keyof VocabularyWord) {
   const [isEditing, setIsEditing] = useState(false)
   // Trạng thái lưu trữ nội dung đang nhập (ép kiểu về string để dùng cho input)
   const [word, setWord] = useState(String(vocabWord[field] ?? ""))
 
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<T>(null)
 
   // Đồng bộ lại state nếu dữ liệu từ bên ngoài (như useLiveQuery của Dexie) thay đổi
   useEffect(() => {
@@ -22,14 +21,21 @@ export default function useInput(
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus()
+      const length = inputRef.current.value.length
+      inputRef.current.setSelectionRange(length, length)
     }
   }, [isEditing])
 
   const saveToDb = async (newWord: string) => {
     const trimmedWord = newWord.trim()
 
+    if (!trimmedWord && field === "word") {
+      setWord(String(vocabWord[field] ?? ""))
+      return
+    }
+
     // Nếu text không đổi hoặc bị xóa trắng thì không làm gì cả
-    if (trimmedWord === String(vocabWord[field] ?? "") || !trimmedWord) {
+    if (trimmedWord === String(vocabWord[field] ?? "")) {
       setWord(String(vocabWord[field] ?? "")) // Trả lại chữ cũ nếu gõ khoảng trắng
       return
     }
@@ -37,7 +43,7 @@ export default function useInput(
     try {
       // Cập nhật trực tiếp trường [field] của bản ghi theo id trong IndexedDB (Dexie)
       await db.words.update(vocabWord.id, {
-        [field]: trimmedWord
+        [field]: trimmedWord || ""
       })
 
       console.log(`Đã cập nhật thành công thành: ${trimmedWord}`)
@@ -57,7 +63,7 @@ export default function useInput(
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<T>) => {
     if (e.key === "Enter") {
       setIsEditing(false)
       saveToDb(word)
@@ -68,8 +74,7 @@ export default function useInput(
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setWord(e.target.value)
+  const handleInputChange = (e: React.ChangeEvent<T>) => setWord(e.target.value)
 
   const handleInputClick = () => setIsEditing(true)
 

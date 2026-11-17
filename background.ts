@@ -37,6 +37,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 
     // Lấy danh sách từ cũ (nếu chưa có thì trả về mảng rỗng)
+    if (selectedWord.length > 24) {
+      console.error("Không thể thêm từ, hoặc cụm từ dài quá 24 ký tự")
+      return
+    }
 
     const rawUrl = info.pageUrl || tab?.url || ""
     let domain = ""

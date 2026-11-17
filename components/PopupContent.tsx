@@ -36,7 +36,7 @@ export default function PopupContent() {
       {/* <!-- Main Body Content --> */}
       <main
         id="main-portal-target"
-        className="relative z-10 flex min-h-screen w-full flex-col pt-16">
+        className="relative z-10 flex w-full flex-1 flex-col pt-16">
         <div className="mx-auto flex w-full max-w-[420px] flex-col gap-space-md px-margin pt-space-md">
           {/* Cấu hình đổi trang dựa trên biến route */}
           {route === "home" && (

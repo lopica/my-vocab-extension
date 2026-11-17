@@ -29,6 +29,7 @@ export default function PhoneticInput({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder={DEFAULT_PHONETICS}
+        maxLength={40}
         className="editable-text -mx-1 cursor-text rounded border-b-2 border-primary bg-primary-fixed/20 px-1 font-phonetic-display text-phonetic-display italic text-on-surface-variant/80 outline-none [field-sizing:content]"
       />
     )
@@ -38,7 +39,7 @@ export default function PhoneticInput({
     <span
       onClick={handleInputClick}
       className="editable-text -mx-1 cursor-pointer px-1 font-phonetic-display text-phonetic-display italic text-on-surface-variant/80">
-      {vocabWord.phonetic ?? DEFAULT_PHONETICS}
+      {vocabWord.phonetic || DEFAULT_PHONETICS}
     </span>
   )
 }

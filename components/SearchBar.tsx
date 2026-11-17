@@ -21,6 +21,7 @@ export default function SearchBar() {
         placeholder="Search saved words..."
         type="text"
         value={searchInput}
+        maxLength={100}
         onChange={(e) => setSearchInput(e.target.value)}
       />
       {/* Bonus: Nút X nhỏ để xóa nhanh từ khóa đang tìm */}

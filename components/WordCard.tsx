@@ -21,9 +21,11 @@ export default function WordCard({
     }
   }
 
-  const handleSpeak = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSpeak = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.stopPropagation()
-    playWord(vocabWord)
+    await playWord(vocabWord)
   }
 
   return (

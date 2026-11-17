@@ -26,6 +26,7 @@ export default function WordInput({
         onChange={handleInputChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
+        maxLength={24}
         className="editable-text -mx-1 cursor-text rounded border-b-2 border-primary bg-primary-fixed/20 px-1 font-headline-md text-headline-md font-semibold text-primary outline-none [field-sizing:content]"
       />
     )

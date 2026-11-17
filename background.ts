@@ -2,6 +2,7 @@ import { Storage } from "@plasmohq/storage"
 
 import { db } from "~db"
 import type { VocabularyWord } from "~types"
+import { addWord } from "~utils"
 
 const storage = new Storage()
 
@@ -36,40 +37,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       }
     }
 
-    // Lấy danh sách từ cũ (nếu chưa có thì trả về mảng rỗng)
-    if (selectedWord.length > 24) {
-      console.error("Không thể thêm từ, hoặc cụm từ dài quá 24 ký tự")
-      return
-    }
-
-    const rawUrl = info.pageUrl || tab?.url || ""
-    let domain = ""
-
-    // 2. Tách lấy tên miền (domain) và xóa chữ "www." ở đầu cho gọn đẹp
-    if (rawUrl) {
-      try {
-        domain = new URL(rawUrl).hostname.replace(/^www\./, "")
-      } catch (error) {
-        console.error("Không thể phân tích URL:", error)
-      }
-    }
-
-    // Thêm từ mới
-    try {
-      // Ghi trực tiếp 1 bản ghi vào IndexedDB, không cần đọc lại mảng cũ
-      await db.words.add({
-        id: crypto.randomUUID(),
-        word: selectedWord,
-        createdAt: Date.now(),
-        sourceDomain: domain,
-        sourceUrl: rawUrl
-      })
-
-      console.log("Lưu từ thành công")
-    } catch (error) {
-      // Nếu từ đã tồn tại (&word unique constraint), Dexie sẽ tự quăng lỗi ConstraintError
-      console.log("Từ đã tồn tại hoặc lỗi khi lưu:", error)
-    }
+    addWord(selectedWord, info, tab)
   }
 })
 

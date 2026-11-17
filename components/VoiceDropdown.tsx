@@ -21,9 +21,9 @@ export default function VoiceDropdown() {
     <>
       {/* <!-- Dropdown Selector --> */}
       <div className="space-y-1.5" ref={dropdownRef}>
-        <label className="block font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
+        {/* <label className="block font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
           Giọng đọc đã chọn
-        </label>
+        </label> */}
 
         {/* Trigger button */}
         <button

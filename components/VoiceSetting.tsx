@@ -18,14 +18,14 @@ export default function VoiceSetting() {
             <h2 className="font-headline-sm text-headline-sm font-semibold text-on-surface">
               Giọng đọc phát âm
             </h2>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
+            {/* <p className="font-body-sm text-body-sm text-on-surface-variant">
               Chrome Web Speech API tích hợp sẵn
-            </p>
+            </p> */}
           </div>
         </div>
-        <span className="bg-secondary-fixed/50 rounded-md px-2 py-0.5 font-label-sm text-label-sm font-bold text-secondary">
+        {/* <span className="bg-secondary-fixed/50 rounded-md px-2 py-0.5 font-label-sm text-label-sm font-bold text-secondary">
           API Chrome
-        </span>
+        </span> */}
       </div>
 
       {/* Voice Dropdown + Rate Slider + Preview — tất cả dùng chung hook qua VoiceDropdown */}

@@ -7,11 +7,11 @@ export default function AppSettingSection() {
   return (
     <section className="flex flex-col space-y-space-sm pb-4">
       <div className="flex items-center gap-1.5 px-1">
-        <span className="material-symbols-outlined text-[18px] text-primary">
-          toggle_on
+        <span className="material-symbols-outlined flex items-center justify-center text-[18px] text-primary">
+          font_download
         </span>
-        <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-primary">
-          Tương tác khi đọc sách (Switch)
+        <h3 className="flex items-center pt-0.5 font-label-md text-label-md font-bold uppercase leading-none tracking-wider text-primary">
+          Tương tác khi thêm từ
         </h3>
       </div>
 

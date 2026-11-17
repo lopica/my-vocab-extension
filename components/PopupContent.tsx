@@ -8,10 +8,10 @@ import { useContext } from "react"
 
 import BottomBar from "~components/BottomBar"
 import Header from "~components/Header"
+import ManualWord from "~components/ManualWord"
 import SearchBar from "~components/SearchBar"
 import WordSection from "~components/WordSection"
 import DeleteBar from "~misc/DeleteBar"
-import ManualWord from "~misc/ManualWord"
 import type { Route } from "~types"
 
 import { RouteContext } from "./contexts/RouteContext"
@@ -40,12 +40,12 @@ export default function PopupContent() {
         <div className="mx-auto flex w-full max-w-[420px] flex-col gap-space-md px-margin pt-space-md">
           {/* Cấu hình đổi trang dựa trên biến route */}
           {route === "home" && (
-            <>
+            <div>
               {/* <DeleteBar /> */}
               <SearchBar />
               <WordSection />
-              {/* <ManualWord /> */}
-            </>
+              <ManualWord />
+            </div>
           )}
           {route === "setting" && <SettingSection />}
         </div>

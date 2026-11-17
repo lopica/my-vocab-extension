@@ -18,7 +18,7 @@ export default function SearchBar() {
       </span>
       <input
         className="w-full bg-transparent py-2.5 pl-9 pr-9 font-body-md text-body-md text-on-surface placeholder:text-outline/70 focus:outline-none"
-        placeholder="Search saved words..."
+        placeholder="Tra từ trong giỏ..."
         type="text"
         value={searchInput}
         maxLength={100}

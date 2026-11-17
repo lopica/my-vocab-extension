@@ -37,7 +37,7 @@ export default function WordSection() {
   return (
     <div
       ref={virtualContainerRef}
-      className="-mr-1 h-[410px] overflow-y-auto pb-4 pr-1 pt-2">
+      className="-mr-1 h-[410px] overflow-y-auto pb-20 pr-1 pt-4">
       {isLoaded && totalCount === 0 && <EmptyWordPlaceholder />}
 
       {isLoaded && totalCount > 0 && matchCount === 0 && (

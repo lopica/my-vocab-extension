@@ -1,7 +1,7 @@
 {
   "name": "my-vocab-extension",
   "displayName": "Giỏ từ",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "lưu từ vựng nhanh chóng, thuận tiện",
   "author": ".",
   "scripts": {

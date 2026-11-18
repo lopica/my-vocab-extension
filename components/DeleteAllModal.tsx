@@ -1,3 +1,4 @@
+import { useState } from "react" // 1. Import useState
 import ReactDOM from "react-dom"
 
 import { db } from "~db"
@@ -10,9 +11,19 @@ export default function DeleteAllModal({
   isShowing: boolean
   hide: () => void
 }) {
+  // 2. Thêm state quản lý trạng thái loading
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const handleDelete = async () => {
-    await deleteAll()
-    hide()
+    setIsDeleting(true) // Bắt đầu trạng thái loading
+    try {
+      await deleteAll()
+      hide()
+    } catch (error) {
+      console.error("Lỗi khi xóa toàn bộ từ:", error)
+    } finally {
+      setIsDeleting(false) // Kết thúc trạng thái loading (phòng trường hợp lỗi không ẩn modal)
+    }
   }
 
   return isShowing
@@ -44,9 +55,11 @@ export default function DeleteAllModal({
             <div className="flex w-full flex-col-reverse gap-space-xs sm:flex-row sm:gap-space-sm">
               {/* <!-- Cancel Button --> */}
               <button
-                className="flex w-full items-center justify-center gap-space-xs rounded-xl bg-surface-container px-space-md py-3 font-label-md text-label-md text-on-surface shadow-sm transition-all duration-150 hover:bg-surface-container-high active:scale-[0.98]"
+                className="flex w-full items-center justify-center gap-space-xs rounded-xl bg-surface-container px-space-md py-3 font-label-md text-label-md text-on-surface shadow-sm transition-all duration-150 hover:bg-surface-container-high active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
                 onClick={hide}
-                type="button">
+                type="button"
+                disabled={isDeleting} // 3. Disable khi đang xóa
+              >
                 <span className="material-symbols-outlined text-[18px]">
                   close
                 </span>
@@ -54,13 +67,17 @@ export default function DeleteAllModal({
               </button>
               {/* <!-- Destructive Confirm Button --> */}
               <button
-                className="flex w-full items-center justify-center gap-space-xs rounded-xl bg-primary px-space-md py-3 font-label-md text-label-md text-on-primary shadow-md shadow-primary/20 transition-all duration-150 hover:bg-primary-container active:scale-[0.98]"
+                className="flex w-full items-center justify-center gap-space-xs rounded-xl bg-primary px-space-md py-3 font-label-md text-label-md text-on-primary shadow-md shadow-primary/20 transition-all duration-150 hover:bg-primary-container active:scale-[0.98] disabled:pointer-events-none disabled:opacity-70"
                 type="button"
-                onClick={handleDelete}>
-                <span className="material-symbols-outlined text-[18px]">
-                  delete
+                onClick={handleDelete}
+                disabled={isDeleting} // 4. Disable khi đang xóa
+              >
+                {/* 5. Đổi icon và text dựa trên state */}
+                <span
+                  className={`material-symbols-outlined text-[18px] ${isDeleting ? "animate-spin" : ""}`}>
+                  {isDeleting ? "progress_activity" : "delete"}
                 </span>
-                <span>Xóa toàn bộ</span>
+                <span>{isDeleting ? "Đang xóa..." : "Xóa toàn bộ"}</span>
               </button>
             </div>
             {/* <!-- Tiny Helper Footnote --> */}

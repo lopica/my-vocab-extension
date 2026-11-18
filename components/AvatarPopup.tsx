@@ -43,7 +43,7 @@ export default function AvatarPopup({
               <div className="-mb-2 h-3.5 w-3.5 rotate-45 rounded-sm bg-surface-container-lowest shadow-sm"></div>
             </div>
             <div className="relative flex flex-col gap-space-sm overflow-hidden rounded-2xl bg-surface-container-lowest/95 p-space-md shadow-xl backdrop-blur-2xl">
-              <div className="relative flex flex-col gap-space-xs overflow-hidden rounded-xl bg-gradient-to-b from-primary-fixed/40 to-primary-fixed/15 p-space-md text-center">
+              {/* <div className="relative flex flex-col gap-space-xs overflow-hidden rounded-xl bg-gradient-to-b from-primary-fixed/40 to-primary-fixed/15 p-space-md text-center">
                 <div className="mb-0.5 flex items-center justify-center gap-space-xs">
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <span className="material-symbols-outlined text-[17px]">
@@ -63,7 +63,7 @@ export default function AvatarPopup({
                   </span>
                   <span>Đăng nhập / Đăng ký</span>
                 </button>
-              </div>
+              </div> */}
               <div className="flex flex-col gap-0.5 pt-1">
                 {/* <button className="group flex w-full items-center justify-between rounded-xl p-2 text-left transition-colors hover:bg-surface-container-high/60">
                   <div className="flex min-w-0 items-center gap-space-sm">

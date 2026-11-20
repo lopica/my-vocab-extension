@@ -4,6 +4,9 @@ import AvatarHeaderButton from "./AvatarHeaderButton"
 import DeleteAllButton from "./DeleteAllButton"
 import useHeader from "./hooks/useHeader"
 
+/**
+ * Thanh đầu giao diện
+ */
 export default function Header() {
   const { wordCount, handleSeed, seedingText } = useHeader()
 

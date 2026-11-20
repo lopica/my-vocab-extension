@@ -2,74 +2,25 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-export interface VoiceOption {
-  voice: SpeechSynthesisVoice
-  flag: string
-  langLabel: string
-  group: string
-}
+import { SPEECH_RATE_KEY, VOICE_NAME_KEY } from "~constants"
+import type { VoiceOption } from "~types"
+import { getFlag, getGroup, getLangLabel, getSampleText } from "~utils"
 
-function getLangLabel(lang: string): string {
-  try {
-    return new Intl.DisplayNames(["vi"], { type: "language" }).of(lang) ?? lang
-  } catch {
-    return lang
-  }
-}
-
-function getFlag(lang: string): string {
-  const code = lang.split("-")[1]?.toUpperCase()
-  if (!code || code.length !== 2) return "🌐"
-  return String.fromCodePoint(
-    ...code.split("").map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)
-  )
-}
-
-const SAMPLE_TEXTS: Record<string, string> = {
-  en: "The quick brown fox jumps over the lazy dog.",
-  vi: "Học từ vựng mỗi ngày giúp bạn tiến bộ nhanh hơn.",
-  fr: "Le renard brun rapide saute par-dessus le chien paresseux.",
-  de: "Der schnelle braune Fuchs springt über den faulen Hund.",
-  es: "El zorro marrón rápido salta sobre el perro perezoso.",
-  it: "La volpe marrone veloce salta sopra il cane pigro.",
-  pt: "A raposa marrom rápida pula sobre o cachorro preguiçoso.",
-  ja: "素早い茶色のキツネが怠け者の犬を飛び越えます。",
-  ko: "빠른 갈색 여우가 게으른 개를 뛰어 넘습니다.",
-  zh: "敏捷的棕色狐狸跳过了懒惰的狗。",
-  ru: "Быстрая коричневая лиса прыгает через ленивую собаку.",
-  ar: "الثعلب البني السريع يقفز فوق الكلب الكسول.",
-  hi: "तेज़ भूरी लोमड़ी आलसी कुत्ते के ऊपर से कूदती है।",
-  nl: "De snelle bruine vos springt over de luie hond.",
-  pl: "Szybki brązowy lis przeskakuje nad leniwym psem.",
-  sv: "Den snabba bruna räven hoppar över den lata hunden.",
-  tr: "Hızlı kahverengi tilki tembel köpeğin üzerinden atlar."
-}
-
-function getSampleText(lang: string): string {
-  const base = lang.split("-")[0].toLowerCase()
-  return SAMPLE_TEXTS[base] ?? SAMPLE_TEXTS["en"]
-}
-
-function getGroup(lang: string): string {
-  const base = lang.split("-")[0].toLowerCase()
-  if (base === "en") return "Tiếng Anh (Khuyên dùng)"
-  if (base === "vi") return "Tiếng Việt"
-  return "Đa ngôn ngữ"
-}
-
+/**
+ * hook tự tạo xử lý logic cài đặt voice (cần tách ra)
+ */
 export default function useVoiceSetting() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const [selectedVoiceName, setSelectedVoiceName] = useStorage<string>(
-    "voice_name",
+    VOICE_NAME_KEY,
     ""
   )
-  const [speechRate, setSpeechRate] = useStorage<number>("speech_rate", 1.0)
+  const [speechRate, setSpeechRate] = useStorage<number>(SPEECH_RATE_KEY, 1.0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [isPlaying, setIsPlaying] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Load voices từ Web Speech API
   useEffect(() => {
     function loadVoices() {
       const list = window.speechSynthesis.getVoices()
@@ -84,7 +35,6 @@ export default function useVoiceSetting() {
     }
   }, [])
 
-  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
@@ -177,7 +127,9 @@ export default function useVoiceSetting() {
     window.speechSynthesis.speak(utterance)
   }
 
-  // Câu mẫu theo ngôn ngữ đang chọn
+  /**
+   * Câu mẫu theo ngôn ngữ đang chọn
+   */
   const sampleText = getSampleText(selectedVoice?.lang ?? "en-US")
 
   return {

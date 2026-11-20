@@ -1,5 +1,8 @@
 import VoiceDropdown from "./VoiceDropdown"
 
+/**
+ * Phần hiển thị cài đặt giọng phát
+ */
 export default function VoiceSetting() {
   return (
     <section className="glass-card relative flex flex-col gap-space-md overflow-hidden rounded-2xl p-space-lg shadow-sm">

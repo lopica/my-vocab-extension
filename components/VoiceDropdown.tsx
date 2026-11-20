@@ -1,5 +1,8 @@
 import useVoiceSetting from "./hooks/useVoiceSetting"
 
+/**
+ * Phần hiển thị các lựa chọn giọng (cần tách component)
+ */
 export default function VoiceDropdown() {
   const {
     groupedOptions,

@@ -1,11 +1,15 @@
-import type { VocabularyWord } from "~types"
+import type { VocabularyCard } from "~types"
 
 import useInput from "./hooks/useInput"
 
-export default function WordInput({
-  vocabWord
+/**
+ * Phần hiển thị của từ hoặc cụm từ trong thẻ
+ * @param vocabCard thẻ từ
+ */
+export default function WordOrPhraseInput({
+  vocabCard
 }: {
-  vocabWord: VocabularyWord
+  vocabCard: VocabularyCard
 }) {
   const {
     isEditing,
@@ -15,7 +19,7 @@ export default function WordInput({
     handleBlur,
     handleInputChange,
     handleKeyDown
-  } = useInput(vocabWord, "word")
+  } = useInput(vocabCard, "wordOrPhrase")
 
   if (isEditing) {
     return (
@@ -36,7 +40,7 @@ export default function WordInput({
     <span
       onClick={handleInputClick}
       className="editable-text -mx-1 cursor-pointer px-1 font-headline-md text-headline-md font-semibold text-on-surface">
-      {vocabWord.word}
+      {vocabCard.wordOrPhrase}
     </span>
   )
 }

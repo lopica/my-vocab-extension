@@ -4,24 +4,24 @@ import "~style.css"
 
 import { useContext } from "react"
 
-// Nhớ import Provider và Context của bạn vào đây (Sửa lại đường dẫn cho đúng)
-
-import BottomBar from "~components/BottomBar"
 import Header from "~components/Header"
 import ManualWord from "~components/ManualWord"
 import SearchBar from "~components/SearchBar"
-import WordSection from "~components/WordSection"
+import VocabCardSection from "~components/VocabCardSection"
+// Nhớ import Provider và Context của bạn vào đây (Sửa lại đường dẫn cho đúng)
+
+import BottomBar from "~misc/BottomBar"
 import DeleteBar from "~misc/DeleteBar"
 import type { Route } from "~types"
 
-import { RouteContext } from "./contexts/RouteContext"
-import SettingSection from "./SettingSection"
+import { RouteContext } from "./components/contexts/RouteContext"
+import SettingSection from "./components/SettingSection"
 
-// 1. Đưa toàn bộ giao diện cũ vào một component con
+/**
+ * Phần khởi tạo hiển thị chung của extension
+ */
 export default function PopupContent() {
-  // Vì PopupContent nằm trong RouteProvider, ta có thể thoải mái gọi useContext
   const context = useContext(RouteContext)
-  // Lấy ra state hiện tại (nếu context null thì mặc định là "home")
   const route: Route = context?.route || "home"
 
   return (
@@ -43,7 +43,7 @@ export default function PopupContent() {
             <div>
               {/* <DeleteBar /> */}
               <SearchBar />
-              <WordSection />
+              <VocabCardSection />
               <ManualWord />
             </div>
           )}

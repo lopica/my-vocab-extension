@@ -1,6 +1,9 @@
 import basket from "~assets/icon.png"
 import SuggestChips from "~misc/SuggestChips"
 
+/**
+ * Phần hiện thị khi không có thẻ từ nào
+ */
 export default function EmptyWordPlaceholder() {
   return (
     <div className="relative flex flex-col items-center overflow-hidden rounded-2xl bg-surface-container-lowest/80 p-space-lg text-center shadow-xl">

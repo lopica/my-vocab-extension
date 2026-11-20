@@ -8,6 +8,9 @@ import {
 
 import type { Route } from "~types"
 
+/**
+ * Context chứa route của extension
+ */
 export const RouteContext = createContext<{
   route: Route
   setRoute: Dispatch<SetStateAction<Route>>

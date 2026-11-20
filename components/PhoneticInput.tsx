@@ -1,13 +1,17 @@
-import type { VocabularyWord } from "~types"
+import type { VocabularyCard } from "~types"
 
 import useInput from "./hooks/useInput"
 
 const DEFAULT_PHONETICS = "/...thêm phiên âm.../"
 
+/**
+ * Phần hiển thị phát âm của thẻ
+ * @param vocabWord thẻ từ
+ */
 export default function PhoneticInput({
   vocabWord
 }: {
-  vocabWord: VocabularyWord
+  vocabWord: VocabularyCard
 }) {
   const {
     isEditing,

@@ -1,9 +1,11 @@
-import { useState } from "react" // 1. Import useState
+import { useState } from "react"
 import ReactDOM from "react-dom"
 
-import { db } from "~db"
-import { deleteAll } from "~utils"
+import { deleteAll } from "~db-sdk"
 
+/**
+ * Phần hiển thị xóa mọi phần tử
+ */
 export default function DeleteAllModal({
   isShowing,
   hide
@@ -11,18 +13,17 @@ export default function DeleteAllModal({
   isShowing: boolean
   hide: () => void
 }) {
-  // 2. Thêm state quản lý trạng thái loading
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
-    setIsDeleting(true) // Bắt đầu trạng thái loading
+    setIsDeleting(true)
     try {
       await deleteAll()
       hide()
     } catch (error) {
       console.error("Lỗi khi xóa toàn bộ từ:", error)
     } finally {
-      setIsDeleting(false) // Kết thúc trạng thái loading (phòng trường hợp lỗi không ẩn modal)
+      setIsDeleting(false)
     }
   }
 

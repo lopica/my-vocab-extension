@@ -1,8 +1,8 @@
 {
-  "name": "my-vocab-extension",
+  "name": "gio-tu-extension",
   "displayName": "Giỏ từ",
   "version": "0.0.3",
-  "description": "lưu từ vựng nhanh chóng, thuận tiện",
+  "description": "Giải pháp lưu từ vựng nhanh chóng, thông minh",
   "author": ".",
   "scripts": {
     "dev": "plasmo dev",

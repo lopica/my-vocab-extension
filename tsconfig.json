@@ -3,10 +3,10 @@
   "exclude": ["node_modules"],
   "include": [".plasmo/index.d.ts", "./**/*.ts", "./**/*.tsx"],
   "compilerOptions": {
-    "types": ["chrome", "node"],
-    "ignoreDeprecations": "6.0",
+    "types": ["chrome", "node"], // chrome là để ide không cảnh báo khi dùng api của chrome
+    "ignoreDeprecations": "6.0", // ide hiện cảnh báo deprecate của bản mới, plasmo đang không hỗ trợ bản typescript cao hơn
     "paths": {
-      "~*": ["./*"]
+      "~*": ["./*"] // alias từ source chính
     },
     "baseUrl": "."
   }

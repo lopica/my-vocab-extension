@@ -29,7 +29,6 @@
   display: none;
 }
 
-/* Warm frosted glass styling */
 .glass-card {
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(20px);
@@ -53,7 +52,6 @@
 }
 
 .glass-header {
-  /* background: rgba(251, 249, 245, 0.82); */
   background: rgba(251, 249, 245);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -77,7 +75,6 @@
     0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-/* Editable inline elements */
 [contenteditable="true"] {
   outline: none;
   border-radius: 4px;
@@ -103,7 +100,6 @@
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
-  /* Cân chỉnh nét chữ cho sắc nét */
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

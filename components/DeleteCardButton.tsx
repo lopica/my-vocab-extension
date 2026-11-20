@@ -1,12 +1,16 @@
-import type { VocabularyWord } from "~types"
+import type { VocabularyCard } from "~types"
 
 import DeleteCardModal from "./DeleteCardModal"
 import useToggle from "./hooks/useToggle"
 
+/**
+ * nút xóa thẻ
+ * @param vocabWord thẻ từ
+ */
 export default function DeleteCardButton({
   vocabWord
 }: {
-  vocabWord?: VocabularyWord
+  vocabWord?: VocabularyCard
 }) {
   const { isShowing, toggle } = useToggle()
 

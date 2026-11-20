@@ -2,28 +2,21 @@ import { useLiveQuery } from "dexie-react-hooks"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-import EmptyWordPlaceholder from "~/components/EmptyWordPlaceholder"
-import WordCard from "~/components/WordCard"
-import { db } from "~db"
+import EmptyWordPlaceholder from "~components/EmptyWordPlaceholder"
+import VocabCard from "~components/VocabCard"
+import { SEARCH_KEY } from "~constants"
+import { getVocabCards } from "~db-sdk"
 
 import useVirtual from "./hooks/useVirtual"
 
-export default function WordSection() {
-  const [searchQuery] = useStorage("search_query", "")
+/**
+ * Phần hiển thị các thẻ từ
+ */
+export default function VocabCardSection() {
+  const [searchQuery] = useStorage(SEARCH_KEY, "")
 
-  // 1. Lấy toàn bộ data trong một lần query duy nhất
   const { totalCount, words, isLoaded } = useLiveQuery(
-    async () => {
-      const totalCount = await db.words.count()
-      const query = (searchQuery || "").trim().toLowerCase()
-
-      // Không dùng offset hay limit, lấy toàn bộ ra bằng .toArray()
-      const words = !query
-        ? await db.words.orderBy("createdAt").reverse().toArray()
-        : await db.words.where("word").startsWithIgnoreCase(query).toArray()
-
-      return { totalCount, words, isLoaded: true }
-    },
+    async () => getVocabCards(searchQuery),
     [searchQuery],
     { totalCount: 0, words: [], isLoaded: false }
   )
@@ -62,7 +55,6 @@ export default function WordSection() {
               width: "100%"
             }}>
             {virtualItems.map((virtualItem) => {
-              // Vì đã lấy TOÀN BỘ mảng, ta chỉ việc map trực tiếp qua index của virtual item
               const word = words[virtualItem.index]
               const isLastItem = virtualItem.index === words.length - 1
 
@@ -72,7 +64,7 @@ export default function WordSection() {
                   data-index={virtualItem.index}
                   ref={virtualizer.measureElement}
                   className={isLastItem ? "" : "pb-3"}>
-                  <WordCard word={word} />
+                  <VocabCard vocabCard={word} />
                 </div>
               )
             })}

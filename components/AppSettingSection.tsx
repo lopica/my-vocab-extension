@@ -1,8 +1,12 @@
 import { useStorage } from "@plasmohq/storage/hook"
 
+import { AUTO_OPEN_SETTING_KEY } from "~constants"
+
+/**
+ * Phần hiển thị cài đặt hành vi của extension
+ */
 export default function AppSettingSection() {
-  // Biến 'autoOpen' sẽ tự động đồng bộ với storage, mặc định là false
-  const [autoOpen, setAutoOpen] = useStorage("autoOpenExtension", false)
+  const [autoOpen, setAutoOpen] = useStorage(AUTO_OPEN_SETTING_KEY, false)
 
   return (
     <section className="flex flex-col space-y-space-sm pb-4">
@@ -31,7 +35,7 @@ export default function AppSettingSection() {
               id="toggle-auto-pronounce"
               type="checkbox"
               checked={autoOpen}
-              onChange={(e) => setAutoOpen(e.target.checked)} // Plasmo storage sẽ tự lưu giá trị mới
+              onChange={(e) => setAutoOpen(e.target.checked)}
             />
             <div className="peer h-6 w-12 rounded-full bg-surface-container-highest after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-on-primary after:shadow-sm after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-on-primary peer-focus:outline-none"></div>
           </div>

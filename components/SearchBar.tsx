@@ -2,8 +2,13 @@ import { useEffect, useState } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import { SEARCH_KEY } from "~constants"
+
+/**
+ * Phần hiển thị tìm kiếm thẻ từ
+ */
 export default function SearchBar() {
-  const [_, setSearchQuery] = useStorage("search_query", "")
+  const [_, setSearchQuery] = useStorage(SEARCH_KEY, "")
   const [searchInput, setSearchInput] = useState<string>("")
 
   useEffect(() => {

@@ -1,86 +1,57 @@
+import { Storage } from "@plasmohq/storage"
+
+import {
+  MENU_OPTION_ID,
+  ONE_DAY,
+  ONE_HOUR,
+  ONE_MINUTE,
+  ONE_MONTH,
+  ONE_YEAR,
+  SAMPLE_DOMAINS,
+  SAMPLE_MEANINGS,
+  SAMPLE_TEXTS,
+  SAMPLE_WORDS
+} from "~constants"
 import { db } from "~db"
-import type { VocabularyWord } from "~types"
+import { addWord } from "~db-sdk"
+import type { VocabularyCard } from "~types"
 
-const ONE_SECOND = 1000
-const ONE_MINUTE = 60 * ONE_SECOND
-const ONE_HOUR = 60 * ONE_MINUTE
-const ONE_DAY = 24 * ONE_HOUR
-const ONE_MONTH = 30 * ONE_DAY
-const ONE_YEAR = 365 * ONE_DAY
-
+/**
+ * Hàm tính thời gian từ lúc thẻ từ được tạo đến hiện tại
+ * @param time mốc thời gian thẻ từ đã tạo (lấy theo milisecond từ 1 tháng 1 1970)
+ * @returns chuỗi thông báo thời gian thẻ được tạo
+ */
 export default function getCreateTimeDisplay(time: number): string {
   const current = Date.now()
   const gap = current - time
 
-  // Nếu thời gian trôi qua chưa tới 1 phút
   if (gap < ONE_MINUTE) {
     return "Vài giây trước"
   }
 
-  // Nếu thời gian trôi qua chưa tới 1 giờ -> Hiển thị phút
   if (gap < ONE_HOUR) {
     const gapMinute = Math.floor(gap / ONE_MINUTE)
     return `${gapMinute} phút trước`
   }
 
-  // Nếu thời gian trôi qua chưa tới 1 ngày -> Hiển thị giờ
   if (gap < ONE_DAY) {
     const gapHour = Math.floor(gap / ONE_HOUR)
     return `${gapHour} giờ trước`
   }
 
-  // Nếu thời gian trôi qua chưa tới 1 tháng -> Hiển thị ngày
   if (gap < ONE_MONTH) {
     const gapDay = Math.floor(gap / ONE_DAY)
     return `${gapDay} ngày trước`
   }
 
-  // Nếu thời gian trôi qua chưa tới 1 năm -> Hiển thị tháng
   if (gap < ONE_YEAR) {
     const gapMonth = Math.floor(gap / ONE_MONTH)
     return `${gapMonth} tháng trước`
   }
 
-  // Nếu lớn hơn 1 năm -> Hiển thị năm
   const gapYear = Math.floor(gap / ONE_YEAR)
   return `${gapYear} năm trước`
 }
-
-const SAMPLE_WORDS = [
-  "serendipity",
-  "ephemeral",
-  "ubiquitous",
-  "mellifluous",
-  "ineffable",
-  "labyrinth",
-  "eloquent",
-  "resilience",
-  "paradigm",
-  "pragmatic",
-  "solitude",
-  "ethereal",
-  "luminescence",
-  "nostalgia",
-  "euphoria"
-]
-
-const SAMPLE_DOMAINS = [
-  "gemini.google.com",
-  "github.com",
-  "stackoverflow.com",
-  "medium.com",
-  "dev.to",
-  "wikipedia.org",
-  "nytimes.com"
-]
-
-const SAMPLE_MEANINGS = [
-  "Sự tình cờ may mắn phát hiện ra điều thú vị.",
-  "Phù du, ngắn ngủi, chỉ tồn tại trong chốc lát.",
-  "Có mặt ở khắp mọi nơi cùng một lúc.",
-  "Ngọt ngào, êm dịu, du dương (âm thanh, giọng nói).",
-  "Không thể diễn tả được bằng lời vì quá tuyệt vời."
-]
 
 /**
  * Hàm bơm dữ liệu giả lập vào IndexedDB theo từng lô (Batch/Chunk)
@@ -91,13 +62,13 @@ export async function seedMillionWords(
   total: number = 1_000_000,
   onProgress?: (inserted: number, total: number) => void
 ) {
-  const BATCH_SIZE = 10_000 // Chèn mỗi lần 10.000 từ để không bị tràn RAM
+  const BATCH_SIZE = 10_000
   const now = Date.now()
 
   console.time(`Seed ${total} words`)
 
   for (let i = 0; i < total; i += BATCH_SIZE) {
-    const chunk: VocabularyWord[] = []
+    const chunk: VocabularyCard[] = []
     const currentBatchSize = Math.min(BATCH_SIZE, total - i)
 
     for (let j = 0; j < currentBatchSize; j++) {
@@ -107,91 +78,90 @@ export async function seedMillionWords(
 
       chunk.push({
         id: `seed-${index}`,
-        // Gắn thêm hậu tố số thứ tự để không bị lỗi trùng lặp (&word unique index)
-        word: `${baseWord}_${index + 1}`,
+        wordOrPhrase: `${baseWord}_${index + 1}`,
         phonetic: "/ˌser.ənˈdɪp.ə.ti/",
-        meaning: SAMPLE_MEANINGS[index % SAMPLE_MEANINGS.length],
-        // Trải đều thời gian tạo để test sắp xếp createdAt chuẩn xác
+        userNote: SAMPLE_MEANINGS[index % SAMPLE_MEANINGS.length],
         createdAt: now - (total - index) * 1000,
         sourceDomain: domain,
         sourceUrl: `https://${domain}/articles/${index}`
       })
     }
 
-    // Dùng bulkPut thay vì bulkAdd để nếu chạy lại không bị văng lỗi trùng ID
     await db.words.bulkPut(chunk)
 
     if (onProgress) {
       onProgress(i + currentBatchSize, total)
     }
 
-    // Nhường luồng chính (main thread) 10ms giữa các batch để UI không bị đơ
     await new Promise((resolve) => setTimeout(resolve, 10))
   }
 
   console.timeEnd(`Seed ${total} words`)
 }
 
-export const deleteAll = async () => {
-  try {
-    await db.words.clear()
-
-    console.log(`Đã xóa thành công toàn bộ từ`)
-    return
-  } catch (error) {
-    console.error("Lỗi khi cập nhật storage:", error)
-    // Hoàn tác lại giá trị cũ trên UI nếu lưu thất bại
-  }
+/**
+ * Thêm lựa chọn custom khi bôi đen từ hoặc cụm từ rồi chuột phải
+ */
+export const addExtensionOption = () => {
+  chrome.contextMenus.create({
+    id: MENU_OPTION_ID,
+    title: 'Thêm vào giỏ từ: "%s"',
+    contexts: ["selection"]
+  })
 }
 
-export const deleteWord = async (vocabWord: VocabularyWord) => {
-  try {
-    // Xóa trực tiếp bản ghi theo khóa chính (id) trong IndexedDB
-    await db.words.delete(vocabWord.id)
+const storage = new Storage()
 
-    console.log(`Đã xóa thành công từ: ${vocabWord.word}`)
-  } catch (error) {
-    console.error("Lỗi khi xóa từ trong IndexedDB:", error)
-  }
-}
+export const onMenuClickHandler: Parameters<
+  typeof chrome.contextMenus.onClicked.addListener
+>[0] = async (info, tab) => {
+  if (info.menuItemId === MENU_OPTION_ID && info.selectionText) {
+    const selectedWord = info.selectionText.trim()
 
-export const addWord = async (
-  word: string,
-  info?: chrome.contextMenus.OnClickData,
-  tab?: chrome.tabs.Tab
-) => {
-  // Lấy danh sách từ cũ (nếu chưa có thì trả về mảng rỗng)
-  if (word.length > 24) {
-    console.error("Không thể thêm từ, hoặc cụm từ dài quá 24 ký tự")
-    return
-  }
+    console.log("Từ vừa bôi đen là:", selectedWord)
 
-  const rawUrl = info?.pageUrl || tab?.url || ""
-  let domain = ""
+    const isAutoOpen = await storage.get("autoOpenExtension")
+    console.log("Setting autoOpen:", isAutoOpen)
 
-  // 2. Tách lấy tên miền (domain) và xóa chữ "www." ở đầu cho gọn đẹp
-  if (rawUrl) {
-    try {
-      domain = new URL(rawUrl).hostname.replace(/^www\./, "")
-    } catch (error) {
-      console.error("Không thể phân tích URL:", error)
+    // MỞ UI TRƯỚC (Để không bị mất quyền User Gesture)
+    if (isAutoOpen && tab && tab.windowId) {
+      try {
+        if (chrome.action && chrome.action.openPopup) {
+          await chrome.action.openPopup({ windowId: tab.windowId })
+        }
+      } catch (err) {
+        console.error("Lỗi khi mở UI:", err)
+      }
     }
-  }
 
-  // Thêm từ mới
+    addWord(selectedWord, info, tab)
+  }
+}
+
+export function getLangLabel(lang: string): string {
   try {
-    // Ghi trực tiếp 1 bản ghi vào IndexedDB, không cần đọc lại mảng cũ
-    await db.words.add({
-      id: crypto.randomUUID(),
-      word: word,
-      createdAt: Date.now(),
-      sourceDomain: domain,
-      sourceUrl: rawUrl
-    })
-
-    console.log("Lưu từ thành công")
-  } catch (error) {
-    // Nếu từ đã tồn tại (&word unique constraint), Dexie sẽ tự quăng lỗi ConstraintError
-    console.log("Từ đã tồn tại hoặc lỗi khi lưu:", error)
+    return new Intl.DisplayNames(["vi"], { type: "language" }).of(lang) ?? lang
+  } catch {
+    return lang
   }
+}
+
+export function getFlag(lang: string): string {
+  const code = lang.split("-")[1]?.toUpperCase()
+  if (!code || code.length !== 2) return "🌐"
+  return String.fromCodePoint(
+    ...code.split("").map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)
+  )
+}
+
+export function getSampleText(lang: string): string {
+  const base = lang.split("-")[0].toLowerCase()
+  return SAMPLE_TEXTS[base] ?? SAMPLE_TEXTS["en"]
+}
+
+export function getGroup(lang: string): string {
+  const base = lang.split("-")[0].toLowerCase()
+  if (base === "en") return "Tiếng Anh (Khuyên dùng)"
+  if (base === "vi") return "Tiếng Việt"
+  return "Đa ngôn ngữ"
 }

@@ -5,6 +5,9 @@ import type { Route } from "~types"
 
 import { RouteContext } from "./contexts/RouteContext"
 
+/**
+ * Phần hiển thị khi bấm avatar
+ */
 export default function AvatarPopup({
   isShowing,
   hide
@@ -22,11 +25,9 @@ export default function AvatarPopup({
   }
 
   useEffect(() => {
-    // Chỉ tìm DOM node sau khi component đã mount (chạy trên client)
     setTargetNode(document.getElementById("main-portal-target"))
   }, [])
 
-  // Trả về null nếu chưa tìm thấy thẻ <main>
   if (!targetNode) return null
 
   return isShowing

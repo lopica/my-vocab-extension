@@ -1,23 +1,27 @@
-import type { VocabularyWord } from "~types"
+import type { VocabularyCard } from "~types"
 import getCreateTimeDisplay from "~utils"
 
 import DeleteCardButton from "./DeleteCardButton"
 import useWordPlay from "./hooks/useWordPlay"
-import MeanInput from "./MeanInput"
 import PhoneticInput from "./PhoneticInput"
-import WordInput from "./WordInput"
+import UserNoteInput from "./UserNoteInput"
+import WordOrPhraseInput from "./WordOrPhraseInput"
 
-export default function WordCard({
-  word: vocabWord
+/**
+ * Phần hiển thị của thẻ từ
+ * @param vocabCard thẻ từ
+ */
+export default function VocabCard({
+  vocabCard
 }: {
-  word: VocabularyWord
+  vocabCard: VocabularyCard
 }) {
   const { isPlaying, playWord } = useWordPlay()
 
   const handleClickDomain = (e) => {
     e.stopPropagation() // Ngăn sự kiện click lan ra thẻ Card bên ngoài
-    if (vocabWord.sourceUrl) {
-      chrome.tabs.create({ url: vocabWord.sourceUrl })
+    if (vocabCard.sourceUrl) {
+      chrome.tabs.create({ url: vocabCard.sourceUrl })
     }
   }
 
@@ -25,7 +29,7 @@ export default function WordCard({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation()
-    await playWord(vocabWord)
+    await playWord(vocabCard)
   }
 
   return (
@@ -35,8 +39,8 @@ export default function WordCard({
       <div className="flex items-start justify-between gap-gutter">
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex flex-wrap items-baseline gap-space-sm">
-            <WordInput vocabWord={vocabWord} />
-            <PhoneticInput vocabWord={vocabWord} />
+            <WordOrPhraseInput vocabCard={vocabCard} />
+            <PhoneticInput vocabWord={vocabCard} />
           </div>
         </div>
         <div className="flex flex-shrink-0 items-center gap-1">
@@ -57,11 +61,11 @@ export default function WordCard({
             )}
           </button>
           {/* <!-- Delete Card Button --> */}
-          <DeleteCardButton vocabWord={vocabWord} />
+          <DeleteCardButton vocabWord={vocabCard} />
         </div>
       </div>
       {/* <!-- Meaning/Definition (Directly editable in place) --> */}
-      <MeanInput vocabWord={vocabWord} />
+      <UserNoteInput vocabCard={vocabCard} />
       {/* <!-- Card Footer --> */}
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-outline-variant/20 pt-2">
         <div className="flex items-center gap-1.5 text-body-sm text-on-surface-variant">
@@ -71,11 +75,11 @@ export default function WordCard({
           <span
             className="cursor-pointer font-label-sm text-label-sm"
             onClick={handleClickDomain}>
-            {vocabWord.sourceDomain}
+            {vocabCard.sourceDomain}
           </span>
           <span className="font-label-sm text-outline-variant">•</span>
           <span className="font-label-sm text-label-sm text-outline">
-            {getCreateTimeDisplay(vocabWord.createdAt)}
+            {getCreateTimeDisplay(vocabCard.createdAt)}
           </span>
         </div>
       </div>

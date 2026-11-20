@@ -1,11 +1,13 @@
 import { useState } from "react"
 
-import { addWord } from "~utils"
+import { addWord } from "~db-sdk"
 
+/**
+ * Phần hiển thị thêm từ tay
+ */
 export default function ManualWord() {
   const [word, setWord] = useState("")
 
-  // Xử lý khi bấm nút Add hoặc nhấn Enter
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -18,22 +20,20 @@ export default function ManualWord() {
     }
 
     try {
-      // 1. Lấy thông tin tab đang mở (để hàm addWord có thể lấy URL/Domain)
       const tabs = await chrome.tabs.query({
         active: true,
         currentWindow: true
       })
       const currentTab = tabs[0]
 
-      // 2. Gọi hàm addWord (truyền undefined cho info, truyền currentTab cho tab)
       await addWord(trimmedWord, undefined, currentTab)
 
-      // 3. Reset ô input sau khi lưu thành công
       setWord("")
     } catch (error) {
       console.error("Lỗi khi thêm từ thủ công:", error)
     }
   }
+
   return (
     <div className="glass-input-bar fixed bottom-6 left-1/2 z-30 w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 rounded-2xl p-space-xs shadow-xl">
       <form

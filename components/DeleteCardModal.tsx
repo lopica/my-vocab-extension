@@ -1,14 +1,21 @@
 import ReactDOM from "react-dom"
 
-import type { VocabularyWord } from "~types"
-import getCreateTimeDisplay, { deleteWord } from "~utils"
+import { deleteWord } from "~db-sdk"
+import type { VocabularyCard } from "~types"
+import getCreateTimeDisplay from "~utils"
 
+/**
+ * phần hiển thị xác nhận xóa thẻ
+ * @param vocabWord thẻ từ
+ * @param isShowing state trạng thái hiển thị modal
+ * @param hide hàm đóng modal
+ */
 export default function DeleteCardModal({
   vocabWord,
   isShowing,
   hide
 }: {
-  vocabWord: VocabularyWord
+  vocabWord: VocabularyCard
   isShowing: boolean
   hide: () => void
 }) {
@@ -48,7 +55,7 @@ export default function DeleteCardModal({
               <div className="flex items-center justify-between pl-2">
                 <div className="flex items-baseline gap-space-xs">
                   <span className="font-headline-sm text-headline-sm font-semibold text-on-surface">
-                    {vocabWord.word}
+                    {vocabWord.wordOrPhrase}
                   </span>
                   <span className="font-phonetic-display text-phonetic-display italic text-on-surface-variant">
                     {vocabWord.phonetic}
@@ -56,7 +63,7 @@ export default function DeleteCardModal({
                 </div>
               </div>
               <p className="line-clamp-2 pl-2 font-body-sm text-body-sm text-on-surface-variant">
-                {vocabWord.meaning}
+                {vocabWord.userNote}
               </p>
               {/* <!-- Source & Date Metadata --> */}
               <div className="mt-0.5 flex items-center gap-space-xs pl-2 pt-1.5 font-label-sm text-label-sm text-outline">
